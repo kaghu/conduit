@@ -1,0 +1,36 @@
+{
+  "name": "conduit",
+  "version": "1.0.0",
+  "description": "Multi-account Claude terminal manager",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "package": "electron-builder"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.0",
+    "@types/react": "^19.2.16",
+    "@types/react-dom": "^19.2.3",
+    "electron": "^42.3.2",
+    "electron-builder": "^26.8.1",
+    "electron-vite": "^5.0.0",
+    "playwright-core": "^1.60.0",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
+    "keytar": "^7.9.0",
+    "node-pty": "^1.1.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "uuid": "^14.0.0",
+    "zustand": "^5.0.14"
+  }
+}

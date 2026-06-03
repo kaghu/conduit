@@ -1,0 +1,5 @@
+.claude
+.vscode
+node_modules
+out
+dist
