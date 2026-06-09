@@ -68,9 +68,10 @@ export function useTerminal({ terminalId, visible }: UseTerminalOptions) {
     })
 
     // Handle PTY exit
-    const removeExitListener = window.conduit.terminal.onExit((id, _code) => {
+    const removeExitListener = window.conduit.terminal.onExit((id, code) => {
       if (id === terminalId) {
-        term.write('\r\n\x1b[90m[Process exited]\x1b[0m\r\n')
+        const codeStr = code !== 0 ? ` with code ${code}` : ''
+        term.write(`\r\n\x1b[90m[Process exited${codeStr}]\x1b[0m\r\n`)
       }
     })
 

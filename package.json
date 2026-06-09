@@ -1,6 +1,6 @@
 {
   "name": "conduit",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Multi-account Claude terminal manager",
   "main": "./out/main/index.js",
   "scripts": {
@@ -8,6 +8,17 @@
     "build": "electron-vite build",
     "preview": "electron-vite preview",
     "package": "electron-builder"
+  },
+  "build": {
+    "appId": "com.conduit.app",
+    "productName": "Conduit",
+    "icon": "resources/icon.png",
+    "extraResources": [
+      { "from": "resources/icon.png", "to": "icon.png" }
+    ],
+    "mac": { "icon": "resources/icon.png" },
+    "win": { "icon": "resources/icon.png" },
+    "linux": { "icon": "resources/icon.png" }
   },
   "keywords": [],
   "author": "",
