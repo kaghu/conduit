@@ -4,7 +4,12 @@ export interface Account {
   color: string
   authMethod: 'email' | 'google'
   authStatus: 'pending' | 'authenticated'
+  workspaceDir: string
   createdAt: string
+}
+
+export type CreateAccountData = Omit<Account, 'id' | 'createdAt' | 'authStatus' | 'workspaceDir'> & {
+  workspaceDir?: string
 }
 
 export interface TerminalTab {
@@ -26,13 +31,16 @@ export interface AppConfig {
 export interface ConduitAPI {
   account: {
     list: () => Promise<Account[]>
-    create: (data: Omit<Account, 'id' | 'createdAt' | 'authStatus'>) => Promise<Account>
-    update: (id: string, data: Partial<Pick<Account, 'alias' | 'color'>>) => Promise<Account>
+    create: (data: CreateAccountData) => Promise<Account>
+    update: (id: string, data: Partial<Pick<Account, 'alias' | 'color' | 'workspaceDir'>>) => Promise<Account>
     delete: (id: string) => Promise<void>
     startAuth: (accountId: string) => Promise<string>
     logout: (accountId: string) => Promise<Account>
     getEmail: (accountId: string) => Promise<string | null>
     onAuthenticated: (callback: (account: Account) => void) => () => void
+  }
+  dialog: {
+    pickDirectory: () => Promise<string | null>
   }
   terminal: {
     create: (accountId: string) => Promise<string>
