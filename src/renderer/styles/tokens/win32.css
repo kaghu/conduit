@@ -1,0 +1,44 @@
+/* Windows — Fluent 2 */
+
+[data-platform="win32"] {
+  --ds-chrome-bg: #f3f3f3;
+  --ds-chrome-border: #e5e5e5;
+  --ds-chrome-hover: #ebebeb;
+  --ds-chrome-active: #e0e0e0;
+
+  --ds-surface: #ffffff;
+  --ds-surface-elevated: #ffffff;
+  --ds-surface-hover: #f5f5f5;
+  --ds-surface-muted: #fafafa;
+
+  --ds-border-subtle: #edebe9;
+  --ds-border-focus: #605e5c;
+
+  --ds-text-primary: #1a1a1a;
+  --ds-text-secondary: #323130;
+  --ds-text-muted: #605e5c;
+  --ds-text-faint: #a19f9d;
+
+  --ds-accent: #0078d4;
+
+  --ds-danger: #d13438;
+  --ds-danger-hover: #a4262c;
+  --ds-success: #107c10;
+  --ds-warning: #ca5010;
+
+  --ds-radius-sm: 2px;
+  --ds-radius-md: 4px;
+  --ds-radius-tab: 0;
+
+  --ds-font-ui: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+
+  --ds-shadow-elevated: 0 3.2px 7.2px 0 rgb(0 0 0 / 0.13), 0 0.6px 1.8px 0 rgb(0 0 0 / 0.11);
+  --ds-shadow-modal: 0 8px 16px 0 rgb(0 0 0 / 0.14);
+
+  /* Fluent 2 — size160 (16px) layout inset, size80 (8px) component gap */
+  --ds-spacing-inset: 1rem;
+  --ds-spacing-gap: 0.5rem;
+  --ds-sidebar-width: 3rem;
+  --ds-titlebar-min-height: 2rem;
+  --ds-tab-bar-height: 1.75rem;
+}

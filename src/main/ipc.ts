@@ -1,6 +1,7 @@
 import { ipcMain, BrowserWindow, dialog } from 'electron'
 import fs from 'node:fs'
 import path from 'node:path'
+import type { Platform } from '../shared/types'
 import {
   listAccounts,
   createAccount,
@@ -35,6 +36,14 @@ function isAuthenticated(configDir: string): boolean {
 }
 
 export function registerIPC(mainWindow: BrowserWindow): void {
+  ipcMain.handle('app:get-platform', (): Platform => {
+    const platform = process.platform
+    if (platform === 'darwin' || platform === 'win32' || platform === 'linux') {
+      return platform
+    }
+    return 'linux'
+  })
+
   ipcMain.handle('account:list', () => listAccounts())
   ipcMain.handle('account:create', (_e, data) => createAccount(data))
   ipcMain.handle('account:update', (_e, id: string, data) => updateAccount(id, data))

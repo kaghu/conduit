@@ -1,0 +1,44 @@
+/* macOS — Apple HIG */
+
+[data-platform="darwin"] {
+  --ds-chrome-bg: #ececec;
+  --ds-chrome-border: #d1d1d1;
+  --ds-chrome-hover: #e0e0e0;
+  --ds-chrome-active: #d8d8d8;
+
+  --ds-surface: #ffffff;
+  --ds-surface-elevated: #ffffff;
+  --ds-surface-hover: #f7f7f7;
+  --ds-surface-muted: #fafafa;
+
+  --ds-border-subtle: #e5e5e5;
+  --ds-border-focus: #999999;
+
+  --ds-text-primary: #111111;
+  --ds-text-secondary: #333333;
+  --ds-text-muted: #888888;
+  --ds-text-faint: #bbbbbb;
+
+  --ds-accent: #555555;
+
+  --ds-danger: #ef4444;
+  --ds-danger-hover: #dc2626;
+  --ds-success: #22c55e;
+  --ds-warning: #fbbf24;
+
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 8px;
+  --ds-radius-tab: 6px 6px 0 0;
+
+  --ds-font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+
+  --ds-shadow-elevated: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --ds-shadow-modal: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* Apple HIG — generous margins, roomier navigation rail */
+  --ds-spacing-inset: 1rem;
+  --ds-spacing-gap: 0.5rem;
+  --ds-sidebar-width: 4rem;
+  --ds-titlebar-min-height: 2.75rem;
+  --ds-tab-bar-height: 2rem;
+}

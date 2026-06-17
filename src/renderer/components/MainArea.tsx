@@ -41,14 +41,14 @@ export function MainArea() {
 
   if (!activeAccount) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-black">
-        <p className="text-[12px] text-[#666]">Select an account</p>
-      </div>
+      <main className="main-panel flex items-center justify-center bg-terminal container-pad">
+        <p className="text-sm text-terminal-text">Select an account</p>
+      </main>
     )
   }
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-black">
+    <main className="main-panel bg-terminal panel-chrome">
       <TopBar
         tabs={accountTabs}
         activeTabId={currentTabId}
@@ -57,13 +57,12 @@ export function MainArea() {
         onNew={handleNewTab}
       />
 
-      {/* Terminal views */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="panel-chrome-body flex-1 relative overflow-hidden">
         {accountTabs.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex items-center justify-center h-full container-pad">
             <button
               onClick={handleNewTab}
-              className="text-[11px] text-[#666] hover:text-white border border-[#333] px-3 py-1.5 rounded transition-colors cursor-pointer"
+              className="text-sm text-terminal-text hover:text-terminal-text-hover border border-terminal-border px-4 py-2 rounded-sm transition-colors cursor-pointer"
             >
               Open terminal
             </button>
@@ -78,6 +77,6 @@ export function MainArea() {
           ))
         )}
       </div>
-    </div>
+    </main>
   )
 }

@@ -21,7 +21,7 @@ export function App() {
   }, [setAccounts, setActiveAccount])
 
   if (isLoading) {
-    return <div className="flex h-full w-full bg-zinc-950" />
+    return <div className="flex h-full w-full bg-terminal" />
   }
 
   if (accounts.length === 0) {
@@ -29,12 +29,10 @@ export function App() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full">
+    <div className="application-shell">
       <TitleBar />
-      <div className="flex flex-1 min-h-0">
-        <Sidebar />
-        <MainArea />
-      </div>
+      <Sidebar />
+      <MainArea />
       {showAddAccount && <AddAccountModal />}
     </div>
   )
