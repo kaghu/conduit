@@ -4,37 +4,44 @@ import { TerminalView } from './TerminalView'
 import type { Account } from '../../shared/types'
 
 const PRESET_COLORS = ['#06b6d4', '#3b82f6', '#f97316', '#ef4444']
+const DEFAULT_WORKSPACE_HINT = '~/.conduit/workspaces/<account>'
 
 type Step = 'setup' | 'auth'
+
+function formatWorkspaceLabel(path: string | null): string {
+  if (!path) return DEFAULT_WORKSPACE_HINT
+  return path.replace(/^\/Users\/[^/]+/, '~')
+}
 
 export function WelcomePage() {
   const { addAccount, setActiveAccount, addTab } = useAppStore()
   const [step, setStep] = useState<Step>('setup')
   const [alias, setAlias] = useState('')
   const [color, setColor] = useState(PRESET_COLORS[0])
+  const [workspaceDir, setWorkspaceDir] = useState<string | null>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [authTerminalId, setAuthTerminalId] = useState<string | null>(null)
   const [pendingAccount, setPendingAccount] = useState<Account | null>(null)
 
   useEffect(() => {
-    const remove = window.conduit.account.onAuthenticated(async (account) => {
-      if (account.id !== pendingAccount?.id) return
+    const remove = window.conduit.account.onAuthenticated((account) => {
+      if (account.id !== pendingAccount?.id || !authTerminalId) return
       addAccount(account)
       setActiveAccount(account.id)
-      try {
-        const terminalId = await window.conduit.terminal.create(account.id)
-        addTab(account.id, {
-          id: terminalId,
-          accountId: account.id,
-          title: 'Terminal',
-          createdAt: new Date().toISOString()
-        })
-      } catch (err) {
-        console.error('Failed to open terminal after auth:', err)
-      }
+      addTab(account.id, {
+        id: authTerminalId,
+        accountId: account.id,
+        title: 'Terminal',
+        createdAt: new Date().toISOString()
+      })
     })
     return remove
-  }, [pendingAccount, addAccount, setActiveAccount, addTab])
+  }, [pendingAccount, authTerminalId, addAccount, setActiveAccount, addTab])
+
+  const handlePickWorkspace = async () => {
+    const picked = await window.conduit.dialog.pickDirectory()
+    if (picked) setWorkspaceDir(picked)
+  }
 
   const handleLogin = async (authMethod: 'email' | 'google') => {
     if (!alias.trim() || isCreating) return
@@ -43,7 +50,8 @@ export function WelcomePage() {
       const account = await window.conduit.account.create({
         alias: alias.trim(),
         color,
-        authMethod
+        authMethod,
+        ...(workspaceDir ? { workspaceDir } : {})
       })
       const terminalId = await window.conduit.account.startAuth(account.id)
       setPendingAccount(account)
@@ -64,11 +72,9 @@ export function WelcomePage() {
     setStep('setup')
   }
 
-  /* ── Auth step ───────────────────────────────────────────────────── */
   if (step === 'auth') {
     return (
       <div className="flex h-full w-full items-center justify-center bg-black">
-        {/* draggable titlebar strip */}
         <div className="titlebar-drag fixed inset-x-0 top-0 h-8" />
         <div className="bg-white rounded-lg shadow-2xl w-full max-w-xl overflow-hidden border border-[#d1d1d1]">
           <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#e5e5e5]">
@@ -98,20 +104,16 @@ export function WelcomePage() {
     )
   }
 
-  /* ── Setup step ─────────────────────────────────────────────────── */
   return (
     <div className="flex h-full w-full items-center justify-center bg-black">
-      {/* draggable titlebar strip */}
       <div className="titlebar-drag fixed inset-x-0 top-0 h-8" />
 
-      <div className="bg-white rounded-lg shadow-2xl w-72 border border-[#d1d1d1] overflow-hidden">
-        {/* Title */}
+      <div className="bg-white rounded-lg shadow-2xl w-80 border border-[#d1d1d1] overflow-hidden">
         <div className="px-5 pt-5 pb-4">
           <p className="text-[11px] text-[#888] uppercase tracking-wide font-medium mb-4">
             Connect account
           </p>
 
-          {/* Nickname input */}
           <input
             type="text"
             value={alias}
@@ -123,7 +125,27 @@ export function WelcomePage() {
             className="w-full px-2.5 py-1.5 text-[12px] text-[#111] placeholder:text-[#bbb] border border-[#d1d1d1] rounded focus:outline-none focus:border-[#999] transition-colors bg-white"
           />
 
-          {/* Color swatches */}
+          <div className="mt-3">
+            <p className="text-[10px] text-[#888] uppercase tracking-wide font-medium mb-1.5">
+              Workspace
+            </p>
+            <div className="flex items-center gap-2">
+              <span
+                className="flex-1 min-w-0 text-[11px] text-[#666] truncate"
+                title={formatWorkspaceLabel(workspaceDir)}
+              >
+                {formatWorkspaceLabel(workspaceDir)}
+              </span>
+              <button
+                type="button"
+                onClick={handlePickWorkspace}
+                className="shrink-0 text-[11px] text-[#333] border border-[#d1d1d1] px-2 py-0.5 rounded hover:bg-[#f5f5f5] transition-colors cursor-pointer"
+              >
+                Choose folder…
+              </button>
+            </div>
+          </div>
+
           <div className="flex items-center gap-2 mt-3">
             {PRESET_COLORS.map((c) => (
               <button
@@ -140,10 +162,8 @@ export function WelcomePage() {
           </div>
         </div>
 
-        {/* Divider */}
         <div className="h-px bg-[#e5e5e5]" />
 
-        {/* Login buttons */}
         <div className="flex flex-col">
           <button
             onClick={() => handleLogin('email')}

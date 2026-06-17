@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow } from 'electron'
+import { ipcMain, BrowserWindow, dialog } from 'electron'
 import fs from 'node:fs'
 import path from 'node:path'
 import {
@@ -21,7 +21,6 @@ import {
   setOnExit
 } from './terminal-manager'
 
-// Claude CLI writes .claude.json and sets oauthAccount once login completes
 const CLAUDE_JSON = '.claude.json'
 
 function isAuthenticated(configDir: string): boolean {
@@ -36,39 +35,37 @@ function isAuthenticated(configDir: string): boolean {
 }
 
 export function registerIPC(mainWindow: BrowserWindow): void {
-  // ── Account channels ──────────────────────────────────────────────
   ipcMain.handle('account:list', () => listAccounts())
-
   ipcMain.handle('account:create', (_e, data) => createAccount(data))
-
   ipcMain.handle('account:update', (_e, id: string, data) => updateAccount(id, data))
-
   ipcMain.handle('account:delete', (_e, id: string) => {
     deleteAccount(id)
   })
-
   ipcMain.handle('account:logout', (_e, id: string) => logoutAccount(id))
-
   ipcMain.handle('account:email', (_e, id: string) => getAccountEmail(id))
 
   ipcMain.handle('account:start-auth', (_e, accountId: string) => {
     const configDir = getAccountConfigDir(accountId)
     const terminalId = createAuthTerminal(accountId)
+    let finished = false
 
     function finish() {
+      if (finished) return
+      finished = true
       clearInterval(interval)
-      try { watcher.close() } catch {}
-      closeTerminal(terminalId)
+      try {
+        watcher.close()
+      } catch {
+        // watcher may already be closed
+      }
       const account = markAccountAuthenticated(accountId)
       mainWindow.webContents.send('account:authenticated', account)
     }
 
-    // Poll every 1s — fs.watch misses file-content changes on macOS
     const interval = setInterval(() => {
       if (isAuthenticated(configDir)) finish()
     }, 1000)
 
-    // Also react immediately on any dir-level change
     const watcher = fs.watch(configDir, { recursive: true }, () => {
       if (isAuthenticated(configDir)) finish()
     })
@@ -76,7 +73,14 @@ export function registerIPC(mainWindow: BrowserWindow): void {
     return terminalId
   })
 
-  // ── Terminal channels ─────────────────────────────────────────────
+  ipcMain.handle('dialog:pick-directory', async () => {
+    const result = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory', 'createDirectory']
+    })
+    if (result.canceled || result.filePaths.length === 0) return null
+    return result.filePaths[0]
+  })
+
   ipcMain.handle('terminal:create', (_e, accountId: string) => {
     return createTerminal(accountId)
   })
@@ -93,7 +97,6 @@ export function registerIPC(mainWindow: BrowserWindow): void {
     closeTerminal(terminalId)
   })
 
-  // ── Terminal → Renderer streams ───────────────────────────────────
   setOnData((terminalId, data) => {
     mainWindow.webContents.send('terminal:data', terminalId, data)
   })

@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { execSync } from 'node:child_process'
 import { v4 as uuidv4 } from 'uuid'
-import { getAccountConfigDir } from './account-manager'
+import { getAccountConfigDir, getAccountWorkspaceDir } from './account-manager'
 
 // Debug log to file — packaged apps have no visible stdout.
 const _logFile = path.join(os.homedir(), '.conduit', 'terminal-manager.log')
@@ -127,13 +127,21 @@ export function setOnExit(cb: ExitCallback): void {
 function spawnTerminal(accountId: string, command: string, args: string[]): string {
   const id = uuidv4()
   const configDir = getAccountConfigDir(accountId)
-  debugLog('spawnTerminal id=%s cmd=%s args=%j configDir=%s', id, command, args, configDir)
+  const workspaceDir = getAccountWorkspaceDir(accountId)
+  debugLog(
+    'spawnTerminal id=%s cmd=%s args=%j configDir=%s workspaceDir=%s',
+    id,
+    command,
+    args,
+    configDir,
+    workspaceDir
+  )
 
   const term = pty.spawn(command, args, {
     name: 'xterm-256color',
     cols: 80,
     rows: 24,
-    cwd: os.homedir(),
+    cwd: workspaceDir,
     env: {
       ...process.env,
       CLAUDE_CONFIG_DIR: configDir,

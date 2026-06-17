@@ -17,6 +17,9 @@ const api: ConduitAPI = {
       return () => ipcRenderer.removeListener('account:authenticated', handler)
     }
   },
+  dialog: {
+    pickDirectory: () => ipcRenderer.invoke('dialog:pick-directory')
+  },
   terminal: {
     create: (accountId) => ipcRenderer.invoke('terminal:create', accountId),
     write: (terminalId, data) => ipcRenderer.send('terminal:write', terminalId, data),
