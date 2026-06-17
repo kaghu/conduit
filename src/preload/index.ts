@@ -2,6 +2,9 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { ConduitAPI } from '../shared/types'
 
 const api: ConduitAPI = {
+  app: {
+    getPlatform: () => ipcRenderer.invoke('app:get-platform')
+  },
   account: {
     list: () => ipcRenderer.invoke('account:list'),
     create: (data) => ipcRenderer.invoke('account:create', data),

@@ -4,25 +4,32 @@ interface AccountAvatarProps {
   account: Account
   isActive: boolean
   onClick: () => void
-  onContextMenu: (e: React.MouseEvent) => void
 }
 
-export function AccountAvatar({ account, isActive, onClick, onContextMenu }: AccountAvatarProps) {
+function accountInitial(alias: string): string {
+  const trimmed = alias.trim()
+  if (!trimmed) return '?'
+  return trimmed.charAt(0).toUpperCase()
+}
+
+export function AccountAvatar({ account, isActive, onClick }: AccountAvatarProps) {
   return (
     <button
       onClick={onClick}
-      onContextMenu={onContextMenu}
-      className="titlebar-no-drag relative flex items-center justify-center cursor-pointer group"
+      className="titlebar-no-drag relative flex items-center justify-center w-8 h-8 cursor-pointer group"
       title={account.alias}
     >
-      {/* Active indicator */}
-      {isActive && (
-        <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-0.5 h-3 rounded-r-full bg-[#555]" />
-      )}
+      {isActive && <div className="avatar-indicator" />}
       <div
-        className={`w-4 h-4 rounded-sm transition-opacity ${isActive ? 'opacity-100' : 'opacity-60 group-hover:opacity-90'}`}
+        className={`w-8 h-8 rounded-md transition-all flex items-center justify-center text-white text-sm font-semibold select-none ${
+          isActive
+            ? 'opacity-100 ring-1 ring-chrome-border'
+            : 'opacity-70 group-hover:opacity-100'
+        }`}
         style={{ backgroundColor: account.color }}
-      />
+      >
+        {accountInitial(account.alias)}
+      </div>
     </button>
   )
 }

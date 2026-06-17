@@ -14,11 +14,20 @@
     "productName": "Conduit",
     "icon": "resources/icon.png",
     "extraResources": [
-      { "from": "resources/icon.png", "to": "icon.png" }
+      {
+        "from": "resources/icon.png",
+        "to": "icon.png"
+      }
     ],
-    "mac": { "icon": "resources/icon.png" },
-    "win": { "icon": "resources/icon.png" },
-    "linux": { "icon": "resources/icon.png" }
+    "mac": {
+      "icon": "resources/icon.png"
+    },
+    "win": {
+      "icon": "resources/icon.png"
+    },
+    "linux": {
+      "icon": "resources/icon.png"
+    }
   },
   "keywords": [],
   "author": "",
@@ -35,6 +44,8 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
+    "@radix-ui/react-context-menu": "^2.3.1",
+    "@radix-ui/react-dropdown-menu": "^2.1.18",
     "@xterm/addon-fit": "^0.11.0",
     "@xterm/xterm": "^6.0.0",
     "keytar": "^7.9.0",

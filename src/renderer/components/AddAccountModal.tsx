@@ -77,27 +77,27 @@ export function AddAccountModal() {
 
   if (step === 'auth') {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-        <div className="bg-white rounded-lg shadow-2xl w-full max-w-xl overflow-hidden border border-[#d1d1d1]">
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#e5e5e5]">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }} />
-              <span className="text-[12px] text-[#333]">{alias}</span>
-              <span className="text-[11px] text-[#888]">— complete login in the terminal</span>
+      <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay container-pad">
+        <div className="modal-shell w-full max-w-xl overflow-hidden stack-gap">
+          <div className="row-gap justify-between container-pad border-b border-border-subtle">
+            <div className="row-gap">
+              <div className="w-3.5 h-3.5 rounded-sm" style={{ backgroundColor: color }} />
+              <span className="text-sm text-text-secondary">{alias}</span>
+              <span className="text-xs text-text-muted">— complete login in the terminal</span>
             </div>
             <button
               onClick={handleCancel}
-              className="text-[11px] text-[#888] hover:text-[#333] transition-colors cursor-pointer"
+              className="text-xs text-text-muted hover:text-text-secondary transition-colors cursor-pointer"
             >
               Cancel
             </button>
           </div>
-          <div className="h-72 bg-black">
+          <div className="h-72 bg-terminal container-pad">
             {authTerminalId && <TerminalView terminalId={authTerminalId} visible={true} />}
           </div>
-          <div className="px-4 py-2 border-t border-[#e5e5e5] flex items-center gap-2 bg-[#fafafa]">
-            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            <span className="text-[11px] text-[#888]">
+          <div className="container-pad border-t border-border-subtle row-gap bg-surface-muted">
+            <div className="w-1.5 h-1.5 rounded-full bg-warning animate-pulse" />
+            <span className="text-xs text-text-muted">
               Window will close automatically once signed in
             </span>
           </div>
@@ -107,15 +107,17 @@ export function AddAccountModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-lg shadow-2xl w-80 border border-[#d1d1d1] overflow-hidden">
-        <div className="px-5 pt-5 pb-4">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] text-[#888] uppercase tracking-wide font-medium">Connect account</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay container-pad">
+      <div className="modal-shell w-80 overflow-hidden stack-gap">
+        <div className="container-pad stack-gap">
+          <div className="row-gap justify-between">
+            <p className="text-xs text-text-muted uppercase tracking-wide font-medium">
+              Connect account
+            </p>
             {canClose && (
               <button
                 onClick={() => setShowAddAccount(false)}
-                className="text-[#aaa] hover:text-[#555] transition-colors cursor-pointer text-lg leading-none"
+                className="text-text-faint hover:text-text-secondary transition-colors cursor-pointer text-lg leading-none"
               >
                 ×
               </button>
@@ -130,16 +132,16 @@ export function AddAccountModal() {
             placeholder="Account nickname"
             maxLength={24}
             autoFocus
-            className="w-full px-2.5 py-1.5 text-[12px] text-[#111] placeholder:text-[#bbb] border border-[#d1d1d1] rounded focus:outline-none focus:border-[#999] transition-colors bg-white"
+            className="w-full px-inset py-gap text-sm text-text-primary placeholder:text-text-faint border border-chrome-border rounded-sm focus:outline-none focus:border-border-focus transition-colors bg-surface"
           />
 
-          <div className="mt-3">
-            <p className="text-[10px] text-[#888] uppercase tracking-wide font-medium mb-1.5">
+          <div className="stack-gap">
+            <p className="text-[10px] text-text-muted uppercase tracking-wide font-medium">
               Workspace
             </p>
-            <div className="flex items-center gap-2">
+            <div className="row-gap">
               <span
-                className="flex-1 min-w-0 text-[11px] text-[#666] truncate"
+                className="flex-1 min-w-0 text-xs text-text-muted truncate"
                 title={formatWorkspaceLabel(workspaceDir)}
               >
                 {formatWorkspaceLabel(workspaceDir)}
@@ -147,19 +149,19 @@ export function AddAccountModal() {
               <button
                 type="button"
                 onClick={handlePickWorkspace}
-                className="shrink-0 text-[11px] text-[#333] border border-[#d1d1d1] px-2 py-0.5 rounded hover:bg-[#f5f5f5] transition-colors cursor-pointer"
+                className="shrink-0 text-xs text-text-secondary border border-chrome-border px-inset py-gap rounded-sm hover:bg-surface-hover transition-colors cursor-pointer"
               >
                 Choose folder…
               </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 mt-3">
+          <div className="row-gap">
             {PRESET_COLORS.map((c) => (
               <button
                 key={c}
                 onClick={() => setColor(c)}
-                className="w-5 h-5 rounded-sm transition-all cursor-pointer shrink-0"
+                className="w-6 h-6 rounded-sm transition-all cursor-pointer shrink-0"
                 style={{
                   backgroundColor: c,
                   outline: color === c ? `2px solid ${c}` : 'none',
@@ -170,20 +172,20 @@ export function AddAccountModal() {
           </div>
         </div>
 
-        <div className="h-px bg-[#e5e5e5]" />
+        <div className="h-px bg-border-subtle" />
 
-        <div className="flex flex-col">
+        <div className="stack-gap container-pad">
           <button
             onClick={() => handleLogin('email')}
             disabled={!alias.trim() || isCreating}
-            className="w-full px-5 py-2.5 text-[12px] text-[#333] text-left hover:bg-[#f5f5f5] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed border-b border-[#e5e5e5]"
+            className="w-full text-sm text-text-secondary text-left hover:bg-surface-hover transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed border-b border-border-subtle pb-gap"
           >
             Login with email
           </button>
           <button
             onClick={() => handleLogin('google')}
             disabled={!alias.trim() || isCreating}
-            className="w-full px-5 py-2.5 text-[12px] text-[#333] text-left hover:bg-[#f5f5f5] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full text-sm text-text-secondary text-left hover:bg-surface-hover transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Login with google
           </button>

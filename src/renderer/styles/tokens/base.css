@@ -1,0 +1,88 @@
+/* Semantic design tokens — components use Tailwind utilities derived from these variables */
+
+@theme {
+  --color-chrome: var(--ds-chrome-bg);
+  --color-chrome-border: var(--ds-chrome-border);
+  --color-chrome-hover: var(--ds-chrome-hover);
+  --color-chrome-active: var(--ds-chrome-active);
+
+  --color-surface: var(--ds-surface);
+  --color-surface-elevated: var(--ds-surface-elevated);
+  --color-surface-hover: var(--ds-surface-hover);
+  --color-surface-muted: var(--ds-surface-muted);
+
+  --color-border-subtle: var(--ds-border-subtle);
+  --color-border-focus: var(--ds-border-focus);
+
+  --color-text-primary: var(--ds-text-primary);
+  --color-text-secondary: var(--ds-text-secondary);
+  --color-text-muted: var(--ds-text-muted);
+  --color-text-faint: var(--ds-text-faint);
+
+  --color-accent: var(--ds-accent);
+
+  --color-danger: var(--ds-danger);
+  --color-danger-hover: var(--ds-danger-hover);
+  --color-success: var(--ds-success);
+  --color-warning: var(--ds-warning);
+
+  --color-terminal: #0f0f0f;
+  --color-terminal-border: #333333;
+  --color-terminal-text: #666666;
+  --color-terminal-text-hover: #ffffff;
+
+  --radius-sm: var(--ds-radius-sm);
+  --radius-md: var(--ds-radius-md);
+  --radius-tab: var(--ds-radius-tab);
+
+  --font-sans: var(--ds-font-ui);
+
+  --shadow-elevated: var(--ds-shadow-elevated);
+  --shadow-modal: var(--ds-shadow-modal);
+
+  --spacing-inset: var(--ds-spacing-inset);
+  --spacing-gap: var(--ds-spacing-gap);
+}
+
+:root {
+  --ds-chrome-bg: #ececec;
+  --ds-chrome-border: #d1d1d1;
+  --ds-chrome-hover: #e0e0e0;
+  --ds-chrome-active: #d8d8d8;
+
+  --ds-surface: #ffffff;
+  --ds-surface-elevated: #ffffff;
+  --ds-surface-hover: #f7f7f7;
+  --ds-surface-muted: #fafafa;
+
+  --ds-border-subtle: #e5e5e5;
+  --ds-border-focus: #999999;
+
+  --ds-text-primary: #111111;
+  --ds-text-secondary: #333333;
+  --ds-text-muted: #888888;
+  --ds-text-faint: #bbbbbb;
+
+  --ds-accent: #555555;
+
+  --ds-danger: #ef4444;
+  --ds-danger-hover: #dc2626;
+  --ds-success: #22c55e;
+  --ds-warning: #fbbf24;
+
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 8px;
+  --ds-radius-tab: 6px 6px 0 0;
+
+  --ds-font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+
+  --ds-shadow-elevated: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --ds-shadow-modal: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* Layout — 16px inset / 8px gap (Fluent size160 / size80) */
+  --ds-spacing-inset: 1rem;
+  --ds-spacing-gap: 0.5rem;
+  --ds-sidebar-width: 4rem;
+  --ds-titlebar-min-height: 2.75rem;
+  --ds-tab-bar-height: 2rem;
+}

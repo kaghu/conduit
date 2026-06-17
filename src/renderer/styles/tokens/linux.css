@@ -1,0 +1,44 @@
+/* Linux — GNOME Adwaita-inspired */
+
+[data-platform="linux"] {
+  --ds-chrome-bg: #f6f5f4;
+  --ds-chrome-border: #c0bfbc;
+  --ds-chrome-hover: #e8e6e3;
+  --ds-chrome-active: #deddda;
+
+  --ds-surface: #ffffff;
+  --ds-surface-elevated: #ffffff;
+  --ds-surface-hover: #f6f5f4;
+  --ds-surface-muted: #fafaf9;
+
+  --ds-border-subtle: #deddda;
+  --ds-border-focus: #5e5c64;
+
+  --ds-text-primary: #2e3436;
+  --ds-text-secondary: #3d3846;
+  --ds-text-muted: #5e5c64;
+  --ds-text-faint: #9a9996;
+
+  --ds-accent: #3584e4;
+
+  --ds-danger: #c01c28;
+  --ds-danger-hover: #a51d2d;
+  --ds-success: #2ec27e;
+  --ds-warning: #e5a50a;
+
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 6px;
+  --ds-radius-tab: 4px 4px 0 0;
+
+  --ds-font-ui: Inter, Cantarell, system-ui, sans-serif;
+
+  --ds-shadow-elevated: 0 2px 6px 0 rgb(0 0 0 / 0.15);
+  --ds-shadow-modal: 0 4px 12px 0 rgb(0 0 0 / 0.12);
+
+  /* Vanilla application layout — 3rem collapsed side navigation */
+  --ds-spacing-inset: 1rem;
+  --ds-spacing-gap: 0.5rem;
+  --ds-sidebar-width: 3rem;
+  --ds-titlebar-min-height: 2.5rem;
+  --ds-tab-bar-height: 2rem;
+}

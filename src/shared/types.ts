@@ -28,7 +28,12 @@ export interface AppConfig {
   }
 }
 
+export type Platform = 'darwin' | 'win32' | 'linux'
+
 export interface ConduitAPI {
+  app: {
+    getPlatform: () => Promise<Platform>
+  }
   account: {
     list: () => Promise<Account[]>
     create: (data: CreateAccountData) => Promise<Account>
