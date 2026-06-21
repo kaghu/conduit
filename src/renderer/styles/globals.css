@@ -112,6 +112,28 @@ body,
   background-color: var(--color-surface-muted);
 }
 
+.sidebar-accounts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-gap);
+  width: 100%;
+  max-height: 66.67vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.sidebar-account-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
 /* Linux — Vanilla p-panel chrome wrapper */
 [data-platform="linux"] .panel-chrome {
   display: flex;

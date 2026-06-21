@@ -12,18 +12,16 @@ export function Sidebar() {
   }
 
   return (
-    <div className="titlebar-drag sidebar-rail flex flex-col items-center bg-chrome border-r border-chrome-border stack-gap shrink-0">
-      <div className="flex flex-col items-center stack-gap flex-1 overflow-y-auto w-full">
+    <div className="titlebar-drag sidebar-rail flex flex-col items-center bg-chrome border-r border-chrome-border shrink-0">
+      <div className="sidebar-accounts">
         {accounts.map((account) => (
           <ContextMenu.Root key={account.id}>
             <ContextMenu.Trigger asChild>
-              <div>
-                <AccountAvatar
-                  account={account}
-                  isActive={activeAccountId === account.id}
-                  onClick={() => setActiveAccount(account.id)}
-                />
-              </div>
+              <AccountAvatar
+                account={account}
+                isActive={activeAccountId === account.id}
+                onClick={() => setActiveAccount(account.id)}
+              />
             </ContextMenu.Trigger>
             <ContextMenu.Portal>
               <ContextMenu.Content className="menu-surface">
@@ -37,15 +35,18 @@ export function Sidebar() {
             </ContextMenu.Portal>
           </ContextMenu.Root>
         ))}
-      </div>
 
-      <button
-        onClick={() => setShowAddAccount(true)}
-        className="titlebar-no-drag flex items-center justify-center w-8 h-8 rounded-md text-text-muted hover:text-text-secondary hover:bg-chrome-hover transition-colors cursor-pointer text-lg leading-none"
-        title="Add account"
-      >
-        +
-      </button>
+        <button
+          type="button"
+          onClick={() => setShowAddAccount(true)}
+          className="titlebar-no-drag sidebar-account-tile cursor-pointer group shrink-0"
+          title="Add account"
+        >
+          <div className="w-8 h-8 rounded-md flex items-center justify-center text-text-muted border border-chrome-border transition-all opacity-70 group-hover:opacity-100 group-hover:bg-chrome-hover group-hover:text-text-secondary text-lg leading-none">
+            +
+          </div>
+        </button>
+      </div>
     </div>
   )
 }
