@@ -3,31 +3,19 @@
   "version": "1.0.2",
   "description": "Multi-account Claude terminal manager",
   "main": "./out/main/index.js",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "package": "electron-builder"
-  },
-  "build": {
-    "appId": "com.conduit.app",
-    "productName": "Conduit",
-    "icon": "resources/icon.png",
-    "extraResources": [
-      {
-        "from": "resources/icon.png",
-        "to": "icon.png"
-      }
-    ],
-    "mac": {
-      "icon": "resources/icon.png"
-    },
-    "win": {
-      "icon": "resources/icon.png"
-    },
-    "linux": {
-      "icon": "resources/icon.png"
-    }
+    "postinstall": "node scripts/patch-node-pty.js && node node_modules/electron/install.js",
+    "prepackage": "node scripts/patch-node-pty.js",
+    "package": "npm run build && electron-builder",
+    "package:mac": "npm run build && electron-builder --mac",
+    "package:win": "npm run build && electron-builder --win",
+    "package:linux": "npm run build && electron-builder --linux"
   },
   "keywords": [],
   "author": "",

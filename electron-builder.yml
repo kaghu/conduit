@@ -1,0 +1,39 @@
+appId: com.conduit.app
+productName: Conduit
+copyright: Copyright © 2026
+directories:
+  output: dist
+  buildResources: resources
+files:
+  - out/**/*
+  - package.json
+  - node_modules/**/*
+  - "!node_modules/**/{test,tests,__tests__,docs,doc}/**"
+asarUnpack:
+  - node_modules/node-pty/**/*
+  - node_modules/keytar/**/*
+extraResources:
+  - from: resources/icon.png
+    to: icon.png
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+mac:
+  icon: resources/icon.png
+  category: public.app-category.developer-tools
+  target:
+    - dmg
+    - zip
+win:
+  icon: resources/icon.png
+  target:
+    - nsis
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+linux:
+  icon: resources/icon.png
+  category: Development
+  maintainer: conduit
+  synopsis: Multi-account Claude terminal manager
+  target:
+    - AppImage
+    - deb

@@ -30,17 +30,70 @@ try {
   throw err
 }
 
-// Packaged macOS apps inherit a stripped PATH (/usr/bin:/bin only).
-// Resolve the absolute path to the `claude` binary so PTY spawns succeed
-// even when the process environment has no useful PATH.
+// Packaged apps inherit a stripped PATH. Resolve the absolute path to the
+// `claude` binary so PTY spawns succeed even when PATH is incomplete.
 let _claudePath: string | null = null
-function resolveClaudePath(): string {
-  if (_claudePath) return _claudePath
-  const shell = process.env.SHELL || '/bin/zsh'
 
+function isExistingFile(filePath: string): boolean {
+  try {
+    return fs.existsSync(filePath) && fs.statSync(filePath).isFile()
+  } catch {
+    return false
+  }
+}
+
+function firstExistingFile(candidates: string[]): string | null {
+  for (const candidate of candidates) {
+    if (isExistingFile(candidate)) return candidate
+  }
+  return null
+}
+
+function resolveClaudePathWindows(): string {
+  debugLog('resolveClaudePath: platform=win32, PATH=%s', process.env.PATH)
+
+  try {
+    const result = execSync('where claude', {
+      encoding: 'utf-8',
+      timeout: 5000,
+      windowsHide: true
+    })
+      .trim()
+      .split(/\r?\n/)[0]
+      ?.trim()
+    debugLog('where claude result:', result)
+    if (result && isExistingFile(result)) {
+      return result
+    }
+  } catch (err) {
+    debugLog('where claude failed:', (err as Error).message)
+  }
+
+  const home = os.homedir()
+  const appData = process.env.APPDATA || path.join(home, 'AppData', 'Roaming')
+  const localAppData = process.env.LOCALAPPDATA || path.join(home, 'AppData', 'Local')
+
+  const resolved = firstExistingFile([
+    path.join(home, '.local', 'bin', 'claude.exe'),
+    path.join(home, '.local', 'bin', 'claude.cmd'),
+    path.join(appData, 'npm', 'claude.cmd'),
+    path.join(localAppData, 'npm', 'claude.cmd'),
+    path.join(home, 'scoop', 'shims', 'claude.cmd')
+  ])
+
+  if (resolved) {
+    debugLog('resolved via well-known path:', resolved)
+    return resolved
+  }
+
+  debugLog('could not resolve absolute path, falling back to bare "claude"')
+  return 'claude'
+}
+
+function resolveClaudePathUnix(): string {
+  const shell = process.env.SHELL || '/bin/zsh'
   debugLog('resolveClaudePath: SHELL=%s, PATH=%s', shell, process.env.PATH)
 
-  // 1. Try login-shell `which` — works when shell rc files set up PATH
   try {
     const cmd = `${shell} -l -c 'which claude 2>/dev/null'`
     debugLog('trying execSync:', cmd)
@@ -50,16 +103,13 @@ function resolveClaudePath(): string {
     }).trim()
     debugLog('which claude result:', result)
     if (result && result.startsWith('/')) {
-      _claudePath = result
-      debugLog('resolved via login shell:', _claudePath)
-      return _claudePath
+      debugLog('resolved via login shell:', result)
+      return result
     }
   } catch (err) {
     debugLog('login-shell which failed:', (err as Error).message)
-    // fall through to well-known paths
   }
 
-  // 2. Check well-known install locations (npm global, homebrew, nvm, volta, etc.)
   const home = os.homedir()
   const candidates = [
     path.join(home, '.npm-global', 'bin', 'claude'),
@@ -69,7 +119,6 @@ function resolveClaudePath(): string {
     path.join(home, '.local', 'bin', 'claude')
   ]
 
-  // Expand nvm: pick the default or highest version
   try {
     const nvmDir = path.join(home, '.nvm', 'versions', 'node')
     if (fs.existsSync(nvmDir)) {
@@ -83,22 +132,20 @@ function resolveClaudePath(): string {
   }
 
   debugLog('checking well-known candidates, count:', candidates.length)
-  for (const candidate of candidates) {
-    try {
-      const exists = fs.existsSync(candidate) && fs.statSync(candidate).isFile()
-      if (exists) {
-        _claudePath = candidate
-        debugLog('resolved via well-known path:', _claudePath)
-        return _claudePath
-      }
-    } catch {
-      // ignore permission errors
-    }
+  const resolved = firstExistingFile(candidates)
+  if (resolved) {
+    debugLog('resolved via well-known path:', resolved)
+    return resolved
   }
 
-  // 3. Last resort — bare name, will rely on the PTY login shell's PATH
-  _claudePath = 'claude'
   debugLog('could not resolve absolute path, falling back to bare "claude"')
+  return 'claude'
+}
+
+function resolveClaudePath(): string {
+  if (_claudePath) return _claudePath
+  _claudePath =
+    os.platform() === 'win32' ? resolveClaudePathWindows() : resolveClaudePathUnix()
   return _claudePath
 }
 
@@ -165,46 +212,37 @@ function spawnTerminal(accountId: string, command: string, args: string[]): stri
   return id
 }
 
-export function createTerminal(accountId: string): string {
-  const claudePath = resolveClaudePath()
-  debugLog('createTerminal: claudePath=%s', claudePath)
+function spawnClaudeTerminal(accountId: string, claudePath: string, label: string): string {
+  debugLog('%s: claudePath=%s, platform=%s', label, claudePath, os.platform())
 
-  if (claudePath.startsWith('/')) {
-    return spawnTerminal(accountId, claudePath, [])
-  }
-
-  // Fallback: wrap in a login shell so PATH is available
-  const isWin = os.platform() === 'win32'
-  const shell = process.env.SHELL || (isWin ? 'powershell.exe' : '/bin/zsh')
-  if (isWin) {
-    return spawnTerminal(accountId, claudePath, [])
-  }
-  return spawnTerminal(accountId, shell, ['-l', '-c', `exec "${claudePath}"`])
-}
-
-export function createAuthTerminal(accountId: string): string {
-  const claudePath = resolveClaudePath()
-  debugLog('createAuthTerminal: claudePath=%s, platform=%s', claudePath, os.platform())
-
-  if (os.platform() === 'win32') {
-    debugLog('spawning directly (win32):', claudePath)
-    return spawnTerminal(accountId, claudePath, [])
-  }
-
-  // If we resolved an absolute path, spawn it directly — no login shell needed.
-  // This avoids issues where the shell's rc files fail or the stripped packaged-
-  // app environment causes `exec` to miss the binary.
-  if (claudePath.startsWith('/')) {
+  if (path.isAbsolute(claudePath)) {
+    if (os.platform() === 'win32' && claudePath.toLowerCase().endsWith('.cmd')) {
+      const cmd = process.env.ComSpec || 'cmd.exe'
+      debugLog('spawning via cmd wrapper:', cmd, claudePath)
+      return spawnTerminal(accountId, cmd, ['/d', '/c', claudePath])
+    }
     debugLog('spawning directly (absolute path):', claudePath)
     return spawnTerminal(accountId, claudePath, [])
   }
 
-  // Fallback: wrap in a login shell so it sources .zprofile/.zshrc and gets the
-  // full user PATH — packaged Electron apps inherit a stripped launchd environment.
+  if (os.platform() === 'win32') {
+    const cmd = process.env.ComSpec || 'cmd.exe'
+    debugLog('spawning via cmd fallback:', cmd, claudePath)
+    return spawnTerminal(accountId, cmd, ['/d', '/c', claudePath])
+  }
+
   const shell = process.env.SHELL || '/bin/zsh'
   const spawnCmd = `exec "${claudePath}"`
   debugLog('spawning via login shell:', shell, '-l -c', spawnCmd)
   return spawnTerminal(accountId, shell, ['-l', '-c', spawnCmd])
+}
+
+export function createTerminal(accountId: string): string {
+  return spawnClaudeTerminal(accountId, resolveClaudePath(), 'createTerminal')
+}
+
+export function createAuthTerminal(accountId: string): string {
+  return spawnClaudeTerminal(accountId, resolveClaudePath(), 'createAuthTerminal')
 }
 
 export function writeTerminal(terminalId: string, data: string): void {
