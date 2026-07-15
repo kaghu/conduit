@@ -4,20 +4,46 @@
 @import "./tokens/win32.css";
 @import "./tokens/linux.css";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/*
+  Keep resets in @layer base so Tailwind utilities (p-*, m-*, space-y-*) win.
+  An unlayered `* { margin/padding: 0 }` overrides all utility spacing.
+*/
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 
-html,
-body,
-#root {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
+  html,
+  body,
+  #root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="menuitem"],
+  [role="option"],
+  a[href],
+  summary,
+  label[for],
+  input[type="checkbox"],
+  input[type="radio"],
+  select {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"],
+  input:disabled,
+  select:disabled {
+    cursor: not-allowed;
+  }
 }
 
 /* Electron frameless window drag regions */
@@ -162,43 +188,58 @@ body,
   width: 3px;
   height: 1.25rem;
   border-radius: 0 2px 2px 0;
-  background-color: var(--color-accent);
+  background-color: var(--ds-accent);
 }
 
 [data-platform="win32"] .avatar-indicator {
   width: 2px;
   height: 1.5rem;
   left: -0.5rem;
-  background-color: var(--color-accent);
+  background-color: var(--ds-accent);
 }
 
 [data-platform="linux"] .avatar-indicator {
   width: 2px;
   height: 1.25rem;
   left: -0.375rem;
-  background-color: var(--color-accent);
+  background-color: var(--ds-accent);
   opacity: 0.9;
 }
 
-/* VS Code-style terminal tabs */
+/* VS Code-style terminal tabs — fixed height, horizontal overflow only */
 .tab-bar {
+  box-sizing: border-box;
   height: var(--ds-tab-bar-height);
+  min-height: var(--ds-tab-bar-height);
+  max-height: var(--ds-tab-bar-height);
   background-color: var(--color-chrome);
   border-bottom: 1px solid var(--color-chrome-border);
   padding-left: var(--spacing-inset);
   padding-right: var(--spacing-inset);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.tab-bar::-webkit-scrollbar {
+  height: 0;
+  width: 0;
 }
 
 .tab-item {
   display: flex;
   align-items: center;
   gap: var(--spacing-gap);
+  box-sizing: border-box;
   height: 100%;
+  max-height: 100%;
   padding: 0 var(--spacing-gap);
   font-size: 11px;
+  line-height: 1;
   flex-shrink: 0;
   cursor: pointer;
+  border: none;
   border-right: 1px solid var(--color-chrome-border);
+  background: transparent;
   color: var(--color-text-muted);
   transition: color 0.15s, background-color 0.15s;
 }
@@ -211,8 +252,6 @@ body,
 .tab-item-active {
   color: var(--color-terminal-text-hover);
   background-color: var(--color-terminal);
-  border-bottom: 1px solid var(--color-terminal);
-  margin-bottom: -1px;
   border-radius: var(--radius-tab);
   font-weight: 500;
 }
@@ -220,69 +259,6 @@ body,
 .tab-item-active:hover {
   color: var(--color-terminal-text-hover);
   background-color: var(--color-terminal);
-}
-
-/* Modal shell */
-.modal-shell {
-  background-color: var(--color-surface-elevated);
-  border: 1px solid var(--color-chrome-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-modal);
-}
-
-.modal-overlay {
-  background-color: rgb(15 15 15 / 0.6);
-}
-
-/* Radix menu surfaces */
-.menu-surface {
-  background-color: var(--color-surface-elevated);
-  border: 1px solid var(--color-chrome-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-elevated);
-  padding: var(--spacing-gap) 0;
-  min-width: 8.75rem;
-  z-index: 50;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-gap);
-  padding: var(--spacing-gap) var(--spacing-inset);
-  font-size: 12px;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  outline: none;
-}
-
-.menu-item:hover,
-.menu-item[data-highlighted] {
-  background-color: var(--color-surface-hover);
-  color: var(--color-text-primary);
-}
-
-.menu-item-danger {
-  color: var(--color-danger);
-}
-
-.menu-item-danger:hover,
-.menu-item-danger[data-highlighted] {
-  color: var(--color-danger-hover);
-  background-color: var(--color-surface-hover);
-}
-
-.menu-label {
-  padding: var(--spacing-gap) var(--spacing-inset);
-  font-size: 11px;
-  color: var(--color-text-muted);
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.menu-separator {
-  height: 1px;
-  background-color: var(--color-border-subtle);
-  margin: var(--spacing-gap) 0;
 }
 
 /* xterm.js — platform-agnostic terminal island */
