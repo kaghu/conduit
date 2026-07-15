@@ -1,0 +1,52 @@
+---
+description: Before UI work, check and follow shadcn design language guidelines
+globs: src/renderer/**/*.{tsx,css},components.json,src/renderer/components/ui/**
+alwaysApply: false
+---
+
+# shadcn design language gate
+
+Before implementing or changing any UI in scope of this rule, **stop and check shadcn’s design language** — do not invent one-off spacing, chrome, or interaction patterns.
+
+## Required check (before coding)
+
+1. Prefer existing `src/renderer/components/ui/*` primitives (`Button`, `Dialog`, `Input`, `Label`, `DropdownMenu`, etc.).
+2. Align with shadcn / New York defaults when unsure:
+   - Dialog: `p-6`, content `gap-4`; header title + description only; close control top-right
+   - Stacks: form fields `gap-2` (label↔control), sections `gap-4`
+   - Footer actions: `DialogFooter` / consistent button hierarchy
+   - Interactive: `cursor-pointer` on clickable controls; disabled → `not-allowed`
+3. If the request conflicts with shadcn patterns (custom chrome, ad-hoc padding reset, non-primitive menus), **call it out and confirm** before coding — do not silently diverge.
+4. Map colors to existing token / CSS variables (`--ds-*`, shadcn semantic vars). Do not introduce a second palette.
+
+## Do
+
+```tsx
+// ✅ Dialog content uses default padding/gap; fields in a gap-4 stack
+<DialogContent className="sm:max-w-sm">
+  <DialogHeader>
+    <DialogTitle>…</DialogTitle>
+    <DialogDescription>…</DialogDescription>
+  </DialogHeader>
+  <div className="flex flex-col gap-4">…</div>
+  <DialogFooter>…</DialogFooter>
+</DialogContent>
+```
+
+## Don’t
+
+```tsx
+// ❌ Zero out dialog spacing then hand-roll inconsistent padding
+<DialogContent className="gap-0 p-0">
+  <div className="p-3">…</div>
+</DialogContent>
+```
+
+```css
+/* ❌ Unlayered universal margin/padding reset that overrides Tailwind utilities */
+* { margin: 0; padding: 0; }
+```
+
+## Out of scope
+
+Shell layout tokens (`.application-shell`, `.titlebar-drag`, `.sidebar-rail`, tab bar chrome) and the xterm terminal island may stay project-specific. Interactive overlays, forms, menus, and buttons still follow shadcn.

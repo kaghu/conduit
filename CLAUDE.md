@@ -26,12 +26,12 @@ Multi-account Claude terminal manager. Electron + React 19 + TypeScript + Tailwi
 
 Tailwind 4 only. Dark-first. No inline `style=` except dynamic hex colors (avatars). Terminal bg is `#0f0f0f` via `--color-terminal` (platform-agnostic dark island).
 
-**Design tokens** — `src/renderer/styles/tokens/`: `base.css` + per-platform `darwin.css` / `win32.css` / `linux.css`. Platform set at boot via `window.conduit.app.getPlatform()` → `data-platform` on `<html>`.
+**Design tokens** — `src/renderer/styles/tokens/`: `base.css` + per-platform `darwin.css` / `win32.css` / `linux.css`. Platform set at boot via `window.conduit.app.getPlatform()` → `data-platform` on `<html>`. Map shadcn CSS variables onto these tokens; do not invent a second palette.
 
-**Chrome utilities** in `globals.css`: `.sidebar-rail`, `.tab-item-active`, `.modal-shell`, `.menu-surface`, `.avatar-indicator`.
+**Interactive UI** — shadcn/ui under `src/renderer/components/ui/`. Feature components use shadcn primitives only (Dialog, Button, Input, menus). No direct `@radix-ui/*` imports outside `components/ui/`.
 
-**Radix UI** — dropdown menu (TitleBar), context menu (Sidebar). Styled with token classes only.
+**Layout chrome** — keep shell utilities in `globals.css` (`.sidebar-rail`, `.titlebar-drag`, tab/avatar layout). Do not replace app grid layout with shadcn.
 
 ## Current phase
 
-Phase 2 (Auth) — auth flow spawns `claude` CLI via `createAuthTerminal`, polls `.claude.json` for `oauthAccount`. Phase 1 (shell, terminals, account CRUD) is complete. Phase 3 (polish) and Phase 4 (distribution) not started.
+Phase 2 (Auth) — auth flow spawns `claude` CLI via `createAuthTerminal`, polls `.claude.json` for `oauthAccount`. Includes shadcn/ui chrome migration (menus + redesigned login dialog; auth IPC unchanged). Phase 1 (shell, terminals, account CRUD) is complete. Phase 3 (polish) and Phase 4 (distribution) not started.

@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { useAppStore } from '../store'
 import { TopBar } from './TopBar'
 import { TerminalView } from './TerminalView'
+import { Button } from '@/components/ui/button'
 
 export function MainArea() {
   const { accounts, activeAccountId, tabs, activeTabId, addTab, closeTab, setActiveTab } =
@@ -60,12 +61,13 @@ export function MainArea() {
       <div className="panel-chrome-body flex-1 relative overflow-hidden">
         {accountTabs.length === 0 ? (
           <div className="flex items-center justify-center h-full container-pad">
-            <button
+            <Button
+              variant="outline"
               onClick={handleNewTab}
-              className="text-sm text-terminal-text hover:text-terminal-text-hover border border-terminal-border px-4 py-2 rounded-sm transition-colors cursor-pointer"
+              className="border-terminal-border bg-transparent text-terminal-text hover:bg-terminal-border/30 hover:text-terminal-text-hover"
             >
               Open terminal
-            </button>
+            </Button>
           </div>
         ) : (
           accountTabs.map((tab) => (

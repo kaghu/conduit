@@ -15,6 +15,7 @@ Conduit is a desktop app that lets you log into multiple Claude accounts simulta
 | Build | Vite + electron-vite | Fast HMR, ESM-first |
 | State | Zustand | Lightweight, no boilerplate |
 | Styling | Tailwind CSS 4 | Utility-first, dark-mode support |
+| UI kit | shadcn/ui | Interactive chrome (dialogs, menus, buttons, inputs) |
 | Terminal emulation | xterm.js (`@xterm/xterm`) | Production-grade terminal renderer (same as VS Code) |
 | Shell backend | `node-pty` | Spawn real PTY shells per tab |
 | Secure storage | `keytar` | OS Keychain for credentials per account |
@@ -419,11 +420,10 @@ Target platforms: macOS (primary), Windows, Linux.
 - Persist accounts to `conduit.json`
 
 ### Phase 2 — Auth
-- Auth window for email login on `claude.ai`
-- Google OAuth flow
-- Cookie/token capture and keytar storage
-- Write `credentials.json` to account config dir
-- Auto-run `claude` on new terminal tab
+- Auth via `createAuthTerminal` (Claude CLI) + poll `.claude.json` for `oauthAccount`
+- Email / Google login entry points in the Connect account dialog (CLI completes the flow)
+- Auto-run `claude` on new terminal tab after auth
+- **shadcn/ui chrome migration** — add shadcn + lucide-react; migrate TitleBar dropdown, Sidebar context menu, and Add Account / login dialog to `components/ui/*`; redesign login popup (Dialog, Button, Input, Label) with Google Sign-In–style button and email button (`Mail` icon); remove direct `@radix-ui/*` app imports (see `docs/superpowers/specs/2026-07-15-shadcn-chrome-migration-design.md`)
 
 ### Phase 3 — Polish
 - Drag-to-reorder tabs

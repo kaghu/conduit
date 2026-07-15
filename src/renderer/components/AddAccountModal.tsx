@@ -1,7 +1,21 @@
 import { useState, useEffect } from 'react'
+import { FolderOpen, Mail, X } from 'lucide-react'
 import { useAppStore } from '../store'
 import { TerminalView } from './TerminalView'
+import { GoogleIcon } from './icons/GoogleIcon'
 import type { Account } from '../../shared/types'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 
 const PRESET_COLORS = ['#06b6d4', '#3b82f6', '#f97316', '#ef4444']
 const DEFAULT_WORKSPACE_HINT = '~/.conduit/workspaces/<account>'
@@ -75,122 +89,170 @@ export function AddAccountModal() {
     setStep('setup')
   }
 
+  const handleDismiss = () => {
+    if (canClose) setShowAddAccount(false)
+  }
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) handleDismiss()
+  }
+
   if (step === 'auth') {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay container-pad">
-        <div className="modal-shell w-full max-w-xl overflow-hidden stack-gap">
-          <div className="row-gap justify-between container-pad border-b border-border-subtle">
-            <div className="row-gap">
-              <div className="w-3.5 h-3.5 rounded-sm" style={{ backgroundColor: color }} />
-              <span className="text-sm text-text-secondary">{alias}</span>
-              <span className="text-xs text-text-muted">— complete login in the terminal</span>
-            </div>
-            <button
-              onClick={handleCancel}
-              className="text-xs text-text-muted hover:text-text-secondary transition-colors cursor-pointer"
-            >
-              Cancel
-            </button>
-          </div>
-          <div className="h-72 bg-terminal container-pad">
+      <Dialog open onOpenChange={() => undefined}>
+        <DialogContent
+          showCloseButton={false}
+          className="gap-0 overflow-hidden p-0 sm:max-w-xl"
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+        >
+          <DialogHeader className="flex-row items-center gap-2 space-y-0 border-b px-4 py-2 text-left">
+            <div className="size-3 shrink-0 rounded-sm" style={{ backgroundColor: color }} />
+            <DialogTitle className="truncate text-xs font-medium">{alias}</DialogTitle>
+            <DialogDescription className="truncate text-[11px]">
+              — complete login in the terminal
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="h-72 bg-terminal p-3">
             {authTerminalId && <TerminalView terminalId={authTerminalId} visible={true} />}
           </div>
-          <div className="container-pad border-t border-border-subtle row-gap bg-surface-muted">
-            <div className="w-1.5 h-1.5 rounded-full bg-warning animate-pulse" />
-            <span className="text-xs text-text-muted">
-              Window will close automatically once signed in
-            </span>
+
+          <div className="flex items-center justify-between gap-3 border-t bg-muted px-3 py-1.5">
+            <div className="flex min-w-0 items-center gap-1.5">
+              <div className="size-1.5 shrink-0 animate-pulse rounded-full bg-warning" />
+              <span className="truncate text-[11px] text-muted-foreground">
+                Closes automatically when signed in
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={handleCancel}
+              className="h-6 shrink-0 px-2 text-[11px]"
+            >
+              Cancel
+            </Button>
           </div>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
     )
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay container-pad">
-      <div className="modal-shell w-80 overflow-hidden stack-gap">
-        <div className="container-pad stack-gap">
-          <div className="row-gap justify-between">
-            <p className="text-xs text-text-muted uppercase tracking-wide font-medium">
-              Connect account
-            </p>
-            {canClose && (
-              <button
-                onClick={() => setShowAddAccount(false)}
-                className="text-text-faint hover:text-text-secondary transition-colors cursor-pointer text-lg leading-none"
-              >
-                ×
-              </button>
-            )}
+    <Dialog open onOpenChange={handleOpenChange}>
+      <DialogContent
+        showCloseButton={false}
+        className="sm:max-w-sm"
+        onPointerDownOutside={(e) => {
+          if (!canClose) e.preventDefault()
+        }}
+        onEscapeKeyDown={(e) => {
+          if (!canClose) e.preventDefault()
+        }}
+      >
+        {canClose && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={handleDismiss}
+            className="absolute top-4 right-4 z-10"
+            aria-label="Close"
+          >
+            <X />
+          </Button>
+        )}
+
+        <DialogHeader className={canClose ? 'pr-8' : undefined}>
+          <DialogTitle>Connect account</DialogTitle>
+          <DialogDescription>
+            Choose a nickname and sign in with Google or email.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="account-alias">Nickname</Label>
+            <Input
+              id="account-alias"
+              type="text"
+              value={alias}
+              onChange={(e) => setAlias(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && alias.trim() && handleLogin('email')}
+              placeholder="Work, Personal…"
+              maxLength={24}
+              autoFocus
+            />
           </div>
 
-          <input
-            type="text"
-            value={alias}
-            onChange={(e) => setAlias(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && alias.trim() && handleLogin('email')}
-            placeholder="Account nickname"
-            maxLength={24}
-            autoFocus
-            className="w-full px-inset py-gap text-sm text-text-primary placeholder:text-text-faint border border-chrome-border rounded-sm focus:outline-none focus:border-border-focus transition-colors bg-surface"
-          />
-
-          <div className="stack-gap">
-            <p className="text-[10px] text-text-muted uppercase tracking-wide font-medium">
-              Workspace
-            </p>
-            <div className="row-gap">
+          <div className="flex flex-col gap-2">
+            <Label>Workspace</Label>
+            <div className="flex items-center gap-2">
               <span
-                className="flex-1 min-w-0 text-xs text-text-muted truncate"
+                className="min-w-0 flex-1 truncate text-sm text-muted-foreground"
                 title={formatWorkspaceLabel(workspaceDir)}
               >
                 {formatWorkspaceLabel(workspaceDir)}
               </span>
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="sm"
                 onClick={handlePickWorkspace}
-                className="shrink-0 text-xs text-text-secondary border border-chrome-border px-inset py-gap rounded-sm hover:bg-surface-hover transition-colors cursor-pointer"
+                className="shrink-0"
               >
-                Choose folder…
-              </button>
+                <FolderOpen />
+                Choose…
+              </Button>
             </div>
           </div>
 
-          <div className="row-gap">
+          <div className="flex gap-2">
             {PRESET_COLORS.map((c) => (
               <button
                 key={c}
+                type="button"
                 onClick={() => setColor(c)}
-                className="w-6 h-6 rounded-sm transition-all cursor-pointer shrink-0"
+                className="size-6 shrink-0 cursor-pointer rounded-sm transition-all"
                 style={{
                   backgroundColor: c,
                   outline: color === c ? `2px solid ${c}` : 'none',
                   outlineOffset: '2px'
                 }}
+                aria-label={`Color ${c}`}
               />
             ))}
           </div>
         </div>
 
-        <div className="h-px bg-border-subtle" />
+        <Separator />
 
-        <div className="stack-gap container-pad">
-          <button
-            onClick={() => handleLogin('email')}
+        <DialogFooter className="flex-col gap-2 sm:flex-col">
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
             disabled={!alias.trim() || isCreating}
-            className="w-full text-sm text-text-secondary text-left hover:bg-surface-hover transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed border-b border-border-subtle pb-gap"
-          >
-            Login with email
-          </button>
-          <button
             onClick={() => handleLogin('google')}
-            disabled={!alias.trim() || isCreating}
-            className="w-full text-sm text-text-secondary text-left hover:bg-surface-hover transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className="h-11 w-full border-border bg-white font-medium text-[#3c4043] shadow-xs hover:bg-[#f8f9fa] hover:text-[#3c4043]"
           >
-            Login with google
-          </button>
-        </div>
-      </div>
-    </div>
+            <GoogleIcon className="size-5" />
+            Continue with Google
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            disabled={!alias.trim() || isCreating}
+            onClick={() => handleLogin('email')}
+            className="h-11 w-full"
+          >
+            <Mail />
+            Continue with email
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

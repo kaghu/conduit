@@ -11,12 +11,13 @@ interface TopBarProps {
 export function TopBar({ tabs, activeTabId, onSelect, onClose, onNew }: TopBarProps) {
   return (
     <div className="titlebar-drag tab-bar shrink-0 select-none">
-      <div className="titlebar-no-drag flex items-center h-full overflow-x-auto">
+      <div className="titlebar-no-drag flex h-full min-h-0 items-stretch overflow-x-auto overflow-y-hidden">
         {tabs.map((tab, i) => {
           const isActive = tab.id === activeTabId
           return (
             <button
               key={tab.id}
+              type="button"
               onClick={() => onSelect(tab.id)}
               onMouseDown={(e) => {
                 if (e.button === 1) {
@@ -26,13 +27,13 @@ export function TopBar({ tabs, activeTabId, onSelect, onClose, onNew }: TopBarPr
               }}
               className={`tab-item group ${isActive ? 'tab-item-active' : ''}`}
             >
-              <span className="select-none">terminal {i + 1}</span>
+              <span className="select-none leading-none">terminal {i + 1}</span>
               <span
                 onClick={(e) => {
                   e.stopPropagation()
                   onClose(tab.id)
                 }}
-                className="opacity-0 group-hover:opacity-60 hover:!opacity-100 leading-none transition-opacity text-text-muted"
+                className="leading-none text-text-muted opacity-0 transition-opacity group-hover:opacity-60 hover:!opacity-100"
               >
                 ×
               </span>
@@ -41,6 +42,7 @@ export function TopBar({ tabs, activeTabId, onSelect, onClose, onNew }: TopBarPr
         })}
 
         <button
+          type="button"
           onClick={onNew}
           className="tab-item text-base leading-none hover:bg-chrome-hover"
           title="New terminal (⌘T)"

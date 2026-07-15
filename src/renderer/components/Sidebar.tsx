@@ -1,6 +1,13 @@
-import * as ContextMenu from '@radix-ui/react-context-menu'
+import { Plus } from 'lucide-react'
 import { useAppStore } from '../store'
 import { AccountAvatar } from './AccountAvatar'
+import { Button } from '@/components/ui/button'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger
+} from '@/components/ui/context-menu'
 
 export function Sidebar() {
   const { accounts, activeAccountId, setActiveAccount, setShowAddAccount, removeAccount } =
@@ -12,40 +19,35 @@ export function Sidebar() {
   }
 
   return (
-    <div className="titlebar-drag sidebar-rail flex flex-col items-center bg-chrome border-r border-chrome-border shrink-0">
+    <div className="titlebar-drag sidebar-rail flex shrink-0 flex-col items-center border-r border-chrome-border bg-chrome">
       <div className="sidebar-accounts">
         {accounts.map((account) => (
-          <ContextMenu.Root key={account.id}>
-            <ContextMenu.Trigger asChild>
+          <ContextMenu key={account.id}>
+            <ContextMenuTrigger asChild>
               <AccountAvatar
                 account={account}
                 isActive={activeAccountId === account.id}
                 onClick={() => setActiveAccount(account.id)}
               />
-            </ContextMenu.Trigger>
-            <ContextMenu.Portal>
-              <ContextMenu.Content className="menu-surface">
-                <ContextMenu.Item
-                  className="menu-item menu-item-danger"
-                  onSelect={() => handleDelete(account.id)}
-                >
-                  Delete account
-                </ContextMenu.Item>
-              </ContextMenu.Content>
-            </ContextMenu.Portal>
-          </ContextMenu.Root>
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuItem variant="destructive" onSelect={() => handleDelete(account.id)}>
+                Delete account
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
         ))}
 
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="icon-sm"
           onClick={() => setShowAddAccount(true)}
-          className="titlebar-no-drag sidebar-account-tile cursor-pointer group shrink-0"
+          className="titlebar-no-drag sidebar-account-tile size-8 rounded-md border-chrome-border text-lg leading-none text-text-muted opacity-70 hover:bg-chrome-hover hover:text-text-secondary hover:opacity-100"
           title="Add account"
         >
-          <div className="w-8 h-8 rounded-md flex items-center justify-center text-text-muted border border-chrome-border transition-all opacity-70 group-hover:opacity-100 group-hover:bg-chrome-hover group-hover:text-text-secondary text-lg leading-none">
-            +
-          </div>
-        </button>
+          <Plus className="size-4" />
+        </Button>
       </div>
     </div>
   )

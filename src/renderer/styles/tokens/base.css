@@ -19,12 +19,31 @@
   --color-text-muted: var(--ds-text-muted);
   --color-text-faint: var(--ds-text-faint);
 
-  --color-accent: var(--ds-accent);
+  --color-accent: var(--ui-accent);
+  --color-accent-foreground: var(--ui-accent-foreground);
 
   --color-danger: var(--ds-danger);
   --color-danger-hover: var(--ds-danger-hover);
   --color-success: var(--ds-success);
   --color-warning: var(--ds-warning);
+
+  /* shadcn semantic colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 
   --color-terminal: #0f0f0f;
   --color-terminal-border: #333333;
@@ -33,6 +52,8 @@
 
   --radius-sm: var(--ds-radius-sm);
   --radius-md: var(--ds-radius-md);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
   --radius-tab: var(--ds-radius-tab);
 
   --font-sans: var(--ds-font-ui);
@@ -85,4 +106,25 @@
   --ds-sidebar-width: 4rem;
   --ds-titlebar-min-height: 2.75rem;
   --ds-tab-bar-height: 2rem;
+
+  /* shadcn CSS variables → existing design tokens */
+  --background: var(--ds-surface);
+  --foreground: var(--ds-text-primary);
+  --card: var(--ds-surface-elevated);
+  --card-foreground: var(--ds-text-primary);
+  --popover: var(--ds-surface-elevated);
+  --popover-foreground: var(--ds-text-primary);
+  --primary: var(--ds-text-primary);
+  --primary-foreground: var(--ds-surface);
+  --secondary: var(--ds-surface-muted);
+  --secondary-foreground: var(--ds-text-secondary);
+  --muted: var(--ds-surface-muted);
+  --muted-foreground: var(--ds-text-muted);
+  --ui-accent: var(--ds-surface-hover);
+  --ui-accent-foreground: var(--ds-text-primary);
+  --destructive: var(--ds-danger);
+  --border: var(--ds-chrome-border);
+  --input: var(--ds-chrome-border);
+  --ring: var(--ds-border-focus);
+  --radius: var(--ds-radius-md);
 }
