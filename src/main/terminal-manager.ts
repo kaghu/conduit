@@ -42,6 +42,14 @@ function isExistingFile(filePath: string): boolean {
   }
 }
 
+function isExistingDir(dirPath: string): boolean {
+  try {
+    return fs.statSync(dirPath).isDirectory()
+  } catch {
+    return false
+  }
+}
+
 function firstExistingFile(candidates: string[]): string | null {
   for (const candidate of candidates) {
     if (isExistingFile(candidate)) return candidate
@@ -171,10 +179,13 @@ export function setOnExit(cb: ExitCallback): void {
   onExitCallback = cb
 }
 
-function spawnTerminal(accountId: string, command: string, args: string[]): string {
+function spawnTerminal(accountId: string, command: string, args: string[], cwd?: string): string {
   const id = uuidv4()
   const configDir = getAccountConfigDir(accountId)
-  const workspaceDir = getAccountWorkspaceDir(accountId)
+  // cwd comes from the renderer — only trust an absolute path to an existing dir.
+  const workspaceDir = cwd && path.isAbsolute(cwd) && isExistingDir(cwd)
+    ? cwd
+    : getAccountWorkspaceDir(accountId)
   debugLog(
     'spawnTerminal id=%s cmd=%s args=%j configDir=%s workspaceDir=%s',
     id,
@@ -237,8 +248,22 @@ function spawnClaudeTerminal(accountId: string, claudePath: string, label: strin
   return spawnTerminal(accountId, shell, ['-l', '-c', spawnCmd])
 }
 
-export function createTerminal(accountId: string): string {
-  return spawnClaudeTerminal(accountId, resolveClaudePath(), 'createTerminal')
+// Run claude inside an interactive shell so exiting claude leaves a prompt
+// in the same tab instead of a dead PTY.
+export function createTerminal(accountId: string, cwd?: string): string {
+  const claudePath = resolveClaudePath()
+  if (os.platform() === 'win32') {
+    // ponytail: always powershell.exe; detect pwsh if users want PS 7
+    const quoted = `'${claudePath.replace(/'/g, "''")}'`
+    return spawnTerminal(
+      accountId,
+      'powershell.exe',
+      ['-NoLogo', '-NoExit', '-Command', `& ${quoted}`],
+      cwd
+    )
+  }
+  const shell = process.env.SHELL || '/bin/zsh'
+  return spawnTerminal(accountId, shell, ['-l', '-c', `"${claudePath}"; exec "${shell}" -l`], cwd)
 }
 
 export function createAuthTerminal(accountId: string): string {
