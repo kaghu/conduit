@@ -105,7 +105,7 @@
   --ds-spacing-gap: 0.5rem;
   --ds-sidebar-width: 4rem;
   --ds-titlebar-min-height: 2.75rem;
-  --ds-tab-bar-height: 2rem;
+  --ds-tab-bar-height: 2.5rem;
 
   /* shadcn CSS variables → existing design tokens */
   --background: var(--ds-surface);

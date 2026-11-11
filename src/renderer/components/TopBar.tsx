@@ -1,3 +1,4 @@
+import { Plus, X } from 'lucide-react'
 import type { TerminalTab } from '../../shared/types'
 
 interface TopBarProps {
@@ -12,7 +13,7 @@ export function TopBar({ tabs, activeTabId, onSelect, onClose, onNew }: TopBarPr
   return (
     <div className="titlebar-drag tab-bar shrink-0 select-none">
       <div className="titlebar-no-drag flex h-full min-h-0 items-stretch overflow-x-auto overflow-y-hidden">
-        {tabs.map((tab, i) => {
+        {tabs.map((tab) => {
           const isActive = tab.id === activeTabId
           return (
             <button
@@ -26,16 +27,21 @@ export function TopBar({ tabs, activeTabId, onSelect, onClose, onNew }: TopBarPr
                 }
               }}
               className={`tab-item group ${isActive ? 'tab-item-active' : ''}`}
+              title={tab.title}
             >
-              <span className="select-none leading-none">terminal {i + 1}</span>
+              <span className="tab-item-label">{tab.title}</span>
               <span
+                role="button"
+                aria-label={`Close ${tab.title}`}
                 onClick={(e) => {
                   e.stopPropagation()
                   onClose(tab.id)
                 }}
-                className="leading-none text-text-muted opacity-0 transition-opacity group-hover:opacity-60 hover:!opacity-100"
+                className={`ml-auto flex size-5.5 shrink-0 items-center justify-center rounded-sm text-text-muted transition-opacity hover:bg-chrome-hover hover:text-text-secondary ${
+                  isActive ? 'opacity-70' : 'opacity-0 group-hover:opacity-70'
+                }`}
               >
-                ×
+                <X className="size-3.5" />
               </span>
             </button>
           )
@@ -44,10 +50,11 @@ export function TopBar({ tabs, activeTabId, onSelect, onClose, onNew }: TopBarPr
         <button
           type="button"
           onClick={onNew}
-          className="tab-item text-base leading-none hover:bg-chrome-hover"
-          title="New terminal (⌘T)"
+          className="tab-item tab-item-icon"
+          title="New terminal in folder…"
+          aria-label="New terminal"
         >
-          +
+          <Plus className="size-4" />
         </button>
       </div>
     </div>

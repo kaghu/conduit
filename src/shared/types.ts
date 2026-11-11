@@ -45,10 +45,10 @@ export interface ConduitAPI {
     onAuthenticated: (callback: (account: Account) => void) => () => void
   }
   dialog: {
-    pickDirectory: () => Promise<string | null>
+    pickDirectory: (defaultPath?: string) => Promise<string | null>
   }
   terminal: {
-    create: (accountId: string) => Promise<string>
+    create: (accountId: string, cwd?: string) => Promise<string>
     write: (terminalId: string, data: string) => void
     resize: (terminalId: string, cols: number, rows: number) => void
     close: (terminalId: string) => void

@@ -82,16 +82,17 @@ export function registerIPC(mainWindow: BrowserWindow): void {
     return terminalId
   })
 
-  ipcMain.handle('dialog:pick-directory', async () => {
+  ipcMain.handle('dialog:pick-directory', async (_e, defaultPath?: string) => {
     const result = await dialog.showOpenDialog(mainWindow, {
-      properties: ['openDirectory', 'createDirectory']
+      properties: ['openDirectory', 'createDirectory'],
+      ...(typeof defaultPath === 'string' ? { defaultPath } : {})
     })
     if (result.canceled || result.filePaths.length === 0) return null
     return result.filePaths[0]
   })
 
-  ipcMain.handle('terminal:create', (_e, accountId: string) => {
-    return createTerminal(accountId)
+  ipcMain.handle('terminal:create', (_e, accountId: string, cwd?: string) => {
+    return createTerminal(accountId, typeof cwd === 'string' ? cwd : undefined)
   })
 
   ipcMain.on('terminal:write', (_e, terminalId: string, data: string) => {

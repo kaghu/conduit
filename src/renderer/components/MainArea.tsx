@@ -12,16 +12,19 @@ export function MainArea() {
   const accountTabs = activeAccountId ? (tabs[activeAccountId] ?? []) : []
   const currentTabId = activeAccountId ? (activeTabId[activeAccountId] ?? '') : ''
 
+  // New tab = pick a folder (starting in the account workspace). Cancel = no tab.
   const handleNewTab = useCallback(async () => {
     if (!activeAccountId) return
-    const terminalId = await window.conduit.terminal.create(activeAccountId)
+    const cwd = await window.conduit.dialog.pickDirectory(activeAccount?.workspaceDir)
+    if (!cwd) return
+    const terminalId = await window.conduit.terminal.create(activeAccountId, cwd)
     addTab(activeAccountId, {
       id: terminalId,
       accountId: activeAccountId,
-      title: 'Terminal',
+      title: cwd.split(/[\\/]/).filter(Boolean).pop() ?? 'Terminal',
       createdAt: new Date().toISOString()
     })
-  }, [activeAccountId, addTab])
+  }, [activeAccountId, activeAccount?.workspaceDir, addTab])
 
   const handleCloseTab = useCallback(
     (tabId: string) => {
@@ -63,7 +66,7 @@ export function MainArea() {
           <div className="flex items-center justify-center h-full container-pad">
             <Button
               variant="outline"
-              onClick={handleNewTab}
+              onClick={() => handleNewTab()}
               className="border-terminal-border bg-transparent text-terminal-text hover:bg-terminal-border/30 hover:text-terminal-text-hover"
             >
               Open terminal

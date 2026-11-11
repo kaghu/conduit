@@ -21,10 +21,10 @@ const api: ConduitAPI = {
     }
   },
   dialog: {
-    pickDirectory: () => ipcRenderer.invoke('dialog:pick-directory')
+    pickDirectory: (defaultPath) => ipcRenderer.invoke('dialog:pick-directory', defaultPath)
   },
   terminal: {
-    create: (accountId) => ipcRenderer.invoke('terminal:create', accountId),
+    create: (accountId, cwd) => ipcRenderer.invoke('terminal:create', accountId, cwd),
     write: (terminalId, data) => ipcRenderer.send('terminal:write', terminalId, data),
     resize: (terminalId, cols, rows) =>
       ipcRenderer.send('terminal:resize', terminalId, cols, rows),
