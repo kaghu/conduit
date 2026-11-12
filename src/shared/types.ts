@@ -30,7 +30,21 @@ export interface AppConfig {
 
 export type Platform = 'darwin' | 'win32' | 'linux'
 
+export interface MenuState {
+  accounts: Pick<Account, 'id' | 'alias'>[]
+  activeAccountId: string | null
+}
+
+export type MenuAction =
+  | { type: 'select-account'; accountId: string }
+  | { type: 'add-account' }
+  | { type: 'sign-out'; accountId: string }
+
 export interface ConduitAPI {
+  menu: {
+    sync: (state: MenuState) => void
+    onAction: (callback: (action: MenuAction) => void) => () => void
+  }
   app: {
     getPlatform: () => Promise<Platform>
   }

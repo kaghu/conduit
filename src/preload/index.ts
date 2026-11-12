@@ -2,6 +2,15 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { ConduitAPI } from '../shared/types'
 
 const api: ConduitAPI = {
+  menu: {
+    sync: (state) => ipcRenderer.send('menu:sync', state),
+    onAction: (callback) => {
+      const handler = (_e: Electron.IpcRendererEvent, action: Parameters<typeof callback>[0]) =>
+        callback(action)
+      ipcRenderer.on('menu:action', handler)
+      return () => ipcRenderer.removeListener('menu:action', handler)
+    }
+  },
   app: {
     getPlatform: () => ipcRenderer.invoke('app:get-platform')
   },

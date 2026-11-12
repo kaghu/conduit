@@ -210,12 +210,30 @@ function spawnTerminal(accountId: string, command: string, args: string[], cwd?:
   const managed: ManagedTerminal = { id, accountId, pty: term }
   terminals.set(id, managed)
 
+  // Batch output (~16ms / 64KB) so heavy output doesn't flood IPC.
+  let buffer = ''
+  let timer: NodeJS.Timeout | null = null
+  const flush = (): void => {
+    if (timer) {
+      clearTimeout(timer)
+      timer = null
+    }
+    if (buffer) {
+      const data = buffer
+      buffer = ''
+      onDataCallback?.(id, data)
+    }
+  }
+
   term.onData((data: string) => {
-    onDataCallback?.(id, data)
+    buffer += data
+    if (buffer.length >= 65536) flush()
+    else if (!timer) timer = setTimeout(flush, 16)
   })
 
   term.onExit(({ exitCode }: { exitCode: number }) => {
     debugLog('PTY exited id=%s exitCode=%d', id, exitCode)
+    flush()
     onExitCallback?.(id, exitCode)
     terminals.delete(id)
   })

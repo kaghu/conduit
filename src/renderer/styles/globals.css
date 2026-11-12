@@ -68,11 +68,9 @@
 /* Application shell — Vanilla l-application grid */
 .application-shell {
   display: grid;
-  grid-template-areas:
-    "titlebar titlebar"
-    "sidebar main";
+  grid-template-areas: "sidebar main";
   grid-template-columns: var(--ds-sidebar-width) minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   height: 100%;
   width: 100%;
 }
@@ -123,6 +121,7 @@
 
 /* macOS — generous rail inset (Apple HIG) */
 [data-platform="darwin"] .sidebar-rail {
+  padding-top: var(--ds-titlebar-min-height); /* clear the traffic lights */
   padding-left: var(--spacing-inset);
   padding-right: var(--spacing-inset);
 }
