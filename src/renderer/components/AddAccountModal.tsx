@@ -3,6 +3,7 @@ import { FolderOpen, Mail, X } from 'lucide-react'
 import { useAppStore } from '../store'
 import { TerminalView } from './TerminalView'
 import { GoogleIcon } from './icons/GoogleIcon'
+import { ColorPicker, nextFreeColor } from './ColorPicker'
 import type { Account } from '../../shared/types'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,7 +18,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 
-const PRESET_COLORS = ['#06b6d4', '#3b82f6', '#f97316', '#ef4444']
 const DEFAULT_WORKSPACE_HINT = '~/.conduit/workspaces/<account>'
 
 type Step = 'setup' | 'auth'
@@ -31,7 +31,7 @@ export function AddAccountModal() {
   const { setShowAddAccount, addAccount, setActiveAccount, addTab, accounts } = useAppStore()
   const [step, setStep] = useState<Step>('setup')
   const [alias, setAlias] = useState('')
-  const [color, setColor] = useState(PRESET_COLORS[0])
+  const [color, setColor] = useState(() => nextFreeColor(accounts.map((a) => a.color)))
   const [workspaceDir, setWorkspaceDir] = useState<string | null>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [authTerminalId, setAuthTerminalId] = useState<string | null>(null)
@@ -208,22 +208,7 @@ export function AddAccountModal() {
             </div>
           </div>
 
-          <div className="flex gap-2">
-            {PRESET_COLORS.map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setColor(c)}
-                className="size-6 shrink-0 cursor-pointer rounded-sm transition-all"
-                style={{
-                  backgroundColor: c,
-                  outline: color === c ? `2px solid ${c}` : 'none',
-                  outlineOffset: '2px'
-                }}
-                aria-label={`Color ${c}`}
-              />
-            ))}
-          </div>
+          <ColorPicker value={color} onChange={setColor} />
         </div>
 
         <Separator />

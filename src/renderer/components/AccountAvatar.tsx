@@ -32,9 +32,14 @@ export const AccountAvatar = forwardRef<HTMLButtonElement, AccountAvatarProps>(
           className={`w-8 h-8 rounded-md transition-all flex items-center justify-center text-white text-xs font-semibold tracking-tight select-none ${
             isActive
               ? 'opacity-100 ring-1 ring-chrome-border'
-              : 'opacity-70 group-hover:opacity-100'
+              : 'opacity-80 group-hover:opacity-100'
           }`}
-          style={{ backgroundColor: account.color }}
+          // Dynamic hex: active = a tone darker, passive = mixed toward gray.
+          style={{
+            backgroundColor: isActive
+              ? `color-mix(in srgb, ${account.color} 80%, black)`
+              : `color-mix(in srgb, ${account.color} 35%, #71717a)`
+          }}
         >
           {accountInitials(account.alias)}
         </div>

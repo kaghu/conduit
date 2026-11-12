@@ -1,7 +1,8 @@
 import { ipcMain, BrowserWindow, dialog } from 'electron'
 import fs from 'node:fs'
 import path from 'node:path'
-import type { Platform } from '../shared/types'
+import type { MenuState, Platform } from '../shared/types'
+import { buildAppMenu } from './menu'
 import {
   listAccounts,
   createAccount,
@@ -36,6 +37,9 @@ function isAuthenticated(configDir: string): boolean {
 }
 
 export function registerIPC(mainWindow: BrowserWindow): void {
+  buildAppMenu(mainWindow, { accounts: [], activeAccountId: null })
+  ipcMain.on('menu:sync', (_e, state: MenuState) => buildAppMenu(mainWindow, state))
+
   ipcMain.handle('app:get-platform', (): Platform => {
     const platform = process.platform
     if (platform === 'darwin' || platform === 'win32' || platform === 'linux') {

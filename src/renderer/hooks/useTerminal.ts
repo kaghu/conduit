@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Terminal } from '@xterm/xterm'
 import { FitAddon } from '@xterm/addon-fit'
+import { WebglAddon } from '@xterm/addon-webgl'
 import '@xterm/xterm/css/xterm.css'
 
 interface UseTerminalOptions {
@@ -48,6 +49,16 @@ export function useTerminal({ terminalId, visible }: UseTerminalOptions) {
     const fit = new FitAddon()
     term.loadAddon(fit)
     term.open(containerRef.current)
+
+    // WebGL renderer for speed; fall back to the DOM renderer if the GPU context is lost
+    // or unavailable.
+    try {
+      const webgl = new WebglAddon()
+      webgl.onContextLoss(() => webgl.dispose())
+      term.loadAddon(webgl)
+    } catch {
+      // keep default renderer
+    }
 
     // Small delay to ensure container is laid out before fitting
     requestAnimationFrame(() => {
